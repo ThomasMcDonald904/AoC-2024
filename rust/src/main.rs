@@ -1,3 +1,4 @@
+use core::num;
 use std::fmt::Error;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
@@ -32,25 +33,23 @@ fn main() -> io::Result<()>{
 
 fn check_decreasing(line: &Vec<i16>) -> Result<i16, Error>{
     let mut acceptable_pairs = 0;
-    let mut has_tolerated_error: bool = false;
+    let mut number_of_problems = 0;
     for level_pair in line.windows(2){
         if level_pair[0] > level_pair[1]{
             if (level_pair[0] - level_pair[1]).abs() >= 1 && (level_pair[0] - level_pair[1]).abs() <= 3{
                 acceptable_pairs += 1;
-            } 
-            else if ! has_tolerated_error {
-                    acceptable_pairs += 1;
-                    has_tolerated_error = true;
-            }
-        } else {
-            if ! has_tolerated_error{
-                acceptable_pairs += 1;
-                has_tolerated_error = true;
-            }
-        }  
-    }   
-    if (acceptable_pairs == line.windows(2).len()) || (has_tolerated_error && acceptable_pairs == line.windows(2).len() + 1){
-        println!("Line: {} is safe. Used Problem dampener is {}", line.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("-"), has_tolerated_error);
+            } else {
+                print!("{} level pair is fucked counting", level_pair.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("~"));
+                number_of_problems += 1;
+            }}
+         else {
+            print!("{} level pair is increasing", level_pair.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("~"));
+            number_of_problems += 1;
+
+        
+    }   }
+    if acceptable_pairs >= line.windows(2).len()-1{
+        println!("Line: {} is safe. Used Problem dampener is {}", line.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("-"), number_of_problems != 0);
         return Ok(1)
     } else {
         println!("Line: {} is unsafe", line.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("-"));
@@ -60,25 +59,25 @@ fn check_decreasing(line: &Vec<i16>) -> Result<i16, Error>{
 
 fn check_increasing(line: &Vec<i16>) -> Result<i16, Error>{
     let mut acceptable_pairs = 0;
-    let mut has_tolerated_error: bool = false;
+    let mut number_of_problems = 0;
+
     for level_pair in line.windows(2){
         if level_pair[0] < level_pair[1]{
             if (level_pair[0] - level_pair[1]).abs() >= 1 && (level_pair[0] - level_pair[1]).abs() <= 3{
                 acceptable_pairs += 1;
             } 
-            else if ! has_tolerated_error {
-                    acceptable_pairs += 1;
-                    has_tolerated_error = true;
-            }
+            else{ 
+                print!("{} level pair is fucked counting", level_pair.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("~"));
+                number_of_problems += 1;
+                }
         } else {
-            if ! has_tolerated_error{
-                acceptable_pairs += 1;
-                has_tolerated_error = true;
-            }
+            print!("{} level pair is decreasing", level_pair.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("~"));
+            number_of_problems += 1;
+
         }  
     }   
-    if (acceptable_pairs == line.windows(2).len()) || (has_tolerated_error && acceptable_pairs == line.windows(2).len() + 1){
-        println!("Line: {} is safe. Used Problem dampener is {}", line.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("-"), has_tolerated_error);
+    if number_of_problems <= 1 {
+        println!("Line: {} is safe. Used Problem dampener is {}", line.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("-"), number_of_problems != 0);
         return Ok(1)
     } else {
         println!("Line: {} is unsafe", line.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("-"));
