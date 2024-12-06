@@ -23,50 +23,45 @@ def day_01(lines: list):
             similarity_score += counter[element] * element
 
     return diff, similarity_score
-
-with open("input_02") as input_file:
-    lines = input_file.readlines()
-
-def day_02(lines: list[str]):
-    counter = 0
+def day_02(lines: List[str]):
     lines_int = []
     for raw_line in lines:
-        lines_int.append([int(i) for i in raw_line.split(" ")])
+        lines_int.append([int(i) for i in raw_line.split()])
     return check_security(lines_int)
 
-def check_security(lines: list[int]):
+def check_security(lines: List[List[int]]):
     counter = 0
     for line in lines:
-        ascending_line = sorted(line)
-        descending_line = sorted(line, reverse=True)
-        asc_diff:List[int] = [line[i] - ascending_line[i] for i in range(len(line))]
-        dec_diff:List[int] = [line[i] - descending_line[i] for i in range(len(line))]
-        adj_diff = check_adjacent_diff(line)
-        if adj_diff[0] == True and adj_diff[1] == False:
-            if len(list(filter(lambda x:  x != 0, asc_diff))) <= 1 or len(list(filter(lambda x:  x != 0, dec_diff))) <= 1:
+        if is_safe(line):
+            counter += 1
+        else:
+            if is_safe_with_dampener(line):
                 counter += 1
-        elif adj_diff[0] == True and adj_diff[1] is list:
-            if len(list(filter(lambda x:  x != 0, adj_diff[1]))) == 0 or len(list(filter(lambda x:  x != 0, adj_diff[1]))) == 0:
-                counter += 1
-        
-    return counter
-                
-
     return counter
 
-def check_adjacent_diff(levels:list[int]):
-    for i in range(len(levels) - 1):
-        diff = abs(levels[i] - levels[i + 1])
-        if not (1 <= diff <= 3):
-            left = check_adjacent_diff([x for x in levels if x != levels[i]])
-            right = check_adjacent_diff([x for x in levels if x != levels[i + 1]])
-            if left == (True, False):
-                return True, sorted([x for x in levels if x != levels[i]])
-            elif right == (True, False):
-                return True, sorted([x for x in levels if x != levels[i+1]])
-            else: 
-                return False, False
-            
-    return True, False
+def is_safe(line: List[int]) -> bool:
+    is_increasing = True
+    is_decreasing = True
+    for i in range(1, len(line)):
+        diff = abs(line[i] - line[i - 1])
+        if diff < 1 or diff > 3:
+            return False
+        if line[i] < line[i - 1]:
+            is_increasing = False
+        elif line[i] > line[i - 1]:
+            is_decreasing = False
+    
+    return is_increasing or is_decreasing
+
+def is_safe_with_dampener(line: List[int]) -> bool:
+    for i in range(len(line)):
+        new_line = line[:i] + line[i + 1:]
+        if is_safe(new_line):
+            return True
+    return False
+
+# Example usage
+with open(r"C:\Users\nayna\Documents\Aoc-2024\input_02") as input_file:
+    lines = input_file.readlines()
 
 print(day_02(lines))
