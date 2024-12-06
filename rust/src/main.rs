@@ -33,33 +33,39 @@ fn main() -> io::Result<()>{
 
 fn check_decreasing(line: &Vec<i16>) -> Result<i16, Error>{
     let mut acceptable_pairs = 0;
-    let mut number_of_problems = 0;
+
     for level_pair in line.windows(2){
         if level_pair[0] > level_pair[1]{
             if (level_pair[0] - level_pair[1]).abs() >= 1 && (level_pair[0] - level_pair[1]).abs() <= 3{
                 acceptable_pairs += 1;
+            } else{ 
+                let first_dampened_line = check_increasing(&line.iter().filter(|x| **x != level_pair[0]).cloned().collect::<Vec<i16>>()).unwrap();
+                let second_dampened_line = check_increasing(&line.iter().filter(|x| **x != level_pair[1]).cloned().collect::<Vec<i16>>()).unwrap();
+                if first_dampened_line == 1 || second_dampened_line == 1{
+                    return Ok(1)
+                } else {
+                    return Ok(0)
+                }
+                }
+        } else {
+            let first_dampened_line = check_increasing(&line.iter().filter(|x| **x != level_pair[0]).cloned().collect::<Vec<i16>>()).unwrap();
+            let second_dampened_line = check_increasing(&line.iter().filter(|x| **x != level_pair[1]).cloned().collect::<Vec<i16>>()).unwrap();
+            if first_dampened_line == 1 || second_dampened_line == 1{
+                return Ok(1)
             } else {
-                print!("{} level pair is fucked counting", level_pair.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("~"));
-                number_of_problems += 1;
-            }}
-         else {
-            print!("{} level pair is increasing", level_pair.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("~"));
-            number_of_problems += 1;
-
-        
-    }   }
-    if acceptable_pairs >= line.windows(2).len()-1{
-        println!("Line: {} is safe. Used Problem dampener is {}", line.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("-"), number_of_problems != 0);
-        return Ok(1)
+                return Ok(0)
+            }
+        }  
+    }   
+    if acceptable_pairs == line.windows(2).len() {
+        return Ok(1);
     } else {
-        println!("Line: {} is unsafe", line.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("-"));
         return Ok(0)
     }
 }
 
 fn check_increasing(line: &Vec<i16>) -> Result<i16, Error>{
     let mut acceptable_pairs = 0;
-    let mut number_of_problems = 0;
 
     for level_pair in line.windows(2){
         if level_pair[0] < level_pair[1]{
@@ -67,20 +73,27 @@ fn check_increasing(line: &Vec<i16>) -> Result<i16, Error>{
                 acceptable_pairs += 1;
             } 
             else{ 
-                print!("{} level pair is fucked counting", level_pair.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("~"));
-                number_of_problems += 1;
+                let first_dampened_line = check_increasing(&line.iter().filter(|x| **x != level_pair[0]).cloned().collect::<Vec<i16>>()).unwrap();
+                let second_dampened_line = check_increasing(&line.iter().filter(|x| **x != level_pair[1]).cloned().collect::<Vec<i16>>()).unwrap();
+                if first_dampened_line == 1 || second_dampened_line == 1{
+                    return Ok(1)
+                } else {
+                    return Ok(0)
+                }
                 }
         } else {
-            print!("{} level pair is decreasing", level_pair.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("~"));
-            number_of_problems += 1;
-
+            let first_dampened_line = check_increasing(&line.iter().filter(|x| **x != level_pair[0]).cloned().collect::<Vec<i16>>()).unwrap();
+            let second_dampened_line = check_increasing(&line.iter().filter(|x| **x != level_pair[1]).cloned().collect::<Vec<i16>>()).unwrap();
+            if first_dampened_line == 1 || second_dampened_line == 1{
+                return Ok(1)
+            } else {
+                return Ok(0)
+            }
         }  
     }   
-    if number_of_problems <= 1 {
-        println!("Line: {} is safe. Used Problem dampener is {}", line.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("-"), number_of_problems != 0);
-        return Ok(1)
+    if acceptable_pairs == line.windows(2).len() {
+        return Ok(1);
     } else {
-        println!("Line: {} is unsafe", line.iter().map(|x|x.to_string()).collect::<Vec<String>>().join("-"));
         return Ok(0)
     }
 }
