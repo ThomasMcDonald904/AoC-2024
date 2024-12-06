@@ -10,12 +10,10 @@ def day_01(lines: list):
     left_column.sort()
     right_column.sort()
    
-    # Part One
     diff = 0
     for element in range(len(left_column)):
         diff += abs(left_column[element] - right_column[element])
 
-    #Part Two
     similarity_score = 0
     counter = Counter(right_column)
     for element in left_column:
@@ -60,7 +58,6 @@ def is_safe_with_dampener(line: List[int]) -> bool:
             return True
     return False
 
-# Example usage
 with open(r"C:\Users\nayna\Documents\Aoc-2024\input_02") as input_file:
     lines = input_file.readlines()
 
